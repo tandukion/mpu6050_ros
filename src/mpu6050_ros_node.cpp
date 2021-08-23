@@ -1,11 +1,11 @@
 /**
- * 
+ * @author  Dwindra Sulistyoutomo
  */
 
 #include "ros/ros.h"
 #include "MPU6050Pi.h"
 
-#include <sensor_msgs/Imu.h>
+#include "mpu6050_ros/conversion.h"
 
 
 int main(int argc, char **argv)
@@ -17,6 +17,8 @@ int main(int argc, char **argv)
   MPU6050Pi mpu;
 
   // MPU6050 variables
+  float accel_scale = mpu.GetAccelSensitivity();
+  float gyro_scale = mpu.GetGyroSensitivity();
   int dev_status;
   uint16_t packet_size;
   uint16_t fifo_count;
@@ -70,6 +72,15 @@ int main(int argc, char **argv)
     mpu.DMPGetQuaternion(&q, fifo_buffer);
     std::cout << std::setw(12) << q.x << std::setw(12) << q.y << std::setw(12) << q.z << std::setw(12) << q.w;
     std::cout << "\r";
+
+    // Create IMU msg
+    sensor_msgs::Imu msg = mpu6050_conversion::CreateImuMsg(fifo_buffer, accel_scale, gyro_scale);
+
+    // Publish
+    imu_pub.publish(msg);
+
+    ros::spinOnce();
+    loop_rate.sleep();
   }
 
   return 0;
