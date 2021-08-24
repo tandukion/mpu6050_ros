@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "MPU6050Pi.h"
 #include <sensor_msgs/Imu.h>
 
 namespace mpu6050_conversion
@@ -19,6 +20,6 @@ namespace mpu6050_conversion
  * 
  * @return {sensor_msgs::Imu}
  */
-sensor_msgs::Imu CreateImuMsg (uint8_t* fifo_buffer, float accel_scale, float gyro_scale, frame_id='');
+sensor_msgs::Imu GenerateImuMsg (uint8_t* fifo_buffer, float accel_scale, float gyro_scale, std::string frame_id="/frame");
 
 }

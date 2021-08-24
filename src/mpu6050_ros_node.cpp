@@ -51,12 +51,6 @@ int main(int argc, char **argv)
   
   ros::Rate loop_rate(10);
 
-  // Publish in loop.
-  std::cout << "Quaternion\n";
-  std::cout << std::fixed << std::setprecision(6) << std::setfill(' ');
-  std::cout << std::setw(12) << "X" << std::setw(12) << "Y" << std::setw(12) << "Z" << std::setw(12) << "W";
-  std::cout << std::endl;
-
   while (ros::ok()) {
     // Clear the buffer so as we can get fresh values
     // The sensor is running a lot faster than our sample period
@@ -68,13 +62,14 @@ int main(int argc, char **argv)
     // Read FIFO buffer
     mpu.GetFIFOBytes(fifo_buffer,packet_size);
 
+    // Debugging
     // Process FIFO buffer to get quaternion
-    mpu.DMPGetQuaternion(&q, fifo_buffer);
-    std::cout << std::setw(12) << q.x << std::setw(12) << q.y << std::setw(12) << q.z << std::setw(12) << q.w;
-    std::cout << "\r";
+    // mpu.DMPGetQuaternion(&q, fifo_buffer);
+    // std::cout << std::setw(12) << q.x << std::setw(12) << q.y << std::setw(12) << q.z << std::setw(12) << q.w;
+    // std::cout << "\n";
 
     // Create IMU msg
-    sensor_msgs::Imu msg = mpu6050_conversion::CreateImuMsg(fifo_buffer, accel_scale, gyro_scale);
+    sensor_msgs::Imu msg = mpu6050_conversion::GenerateImuMsg(fifo_buffer, accel_scale, gyro_scale);
 
     // Publish
     imu_pub.publish(msg);
