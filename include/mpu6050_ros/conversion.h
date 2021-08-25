@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <fstream>
 #include <sensor_msgs/Imu.h>
 
 #ifndef G_FORCE
@@ -13,6 +14,8 @@
 namespace mpu6050_conversion
 {
 const float degToRad = M_PI/180.0;
+
+int16_t* GetCalibrationData (std::string filepath);
 
 /**
  * Create IMU msg from DMP FIFO buffer

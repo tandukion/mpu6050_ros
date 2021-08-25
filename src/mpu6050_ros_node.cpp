@@ -18,6 +18,14 @@ int main(int argc, char **argv)
 
   ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("imu_data", 10);
 
+  // Get MPU6050 calibration data for offsets
+  std::string filepath = std::getenv("HOME");
+  filepath += "/.local/share/MPU6050/calibration.csv";
+  ROS_INFO("Using calibration data from: %s", filepath.c_str());
+
+  int16_t *offsets;
+  offsets = mpu6050_conversion::GetCalibrationData(filepath);
+
   // Start the MPU6050 data handler. Background thread will update the data
   MPU6050Handler mpu_handler(&nh);
   
