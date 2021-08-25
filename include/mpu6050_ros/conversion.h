@@ -24,6 +24,6 @@ const float degToRad = M_PI/180.0;
  * 
  * @return {sensor_msgs::Imu}
  */
-sensor_msgs::Imu GenerateImuMsg (uint8_t* fifo_buffer, float accel_scale, float gyro_scale, std::string frame_id="/frame");
+sensor_msgs::Imu GenerateImuMsg (uint8_t* fifo_buffer, float accel_scale, float gyro_scale, std::string frame_id="imu");
 
 }
