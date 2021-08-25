@@ -1,3 +1,5 @@
 <launch>
-  <node pkg="mpu6050_ros" type="mpu6050_ros_node" name="mpu6050_ros_node" output="screen"/>
+  <group ns="mpu6050">
+    <node pkg="mpu6050_ros" type="mpu6050_ros_node" name="mpu6050_ros_node" output="screen"/>
+  </group>
 </launch>
