@@ -4,12 +4,15 @@
 
 #include "mpu6050_ros/mpu6050_handler.h"
 
-MPU6050Handler::MPU6050Handler(ros::NodeHandle *nh)
+MPU6050Handler::MPU6050Handler(ros::NodeHandle *nh, int16_t *offsets)
   : // initialization list
   nh_(*nh),
   mpu_(MPU6050Pi()),
   update_rate_(ros::Rate(100))
 {
+  // Set MPU6050 Offsets
+  mpu_.SetOffset(offsets);
+
   accel_scale = mpu_.GetAccelSensitivity();
   gyro_scale = mpu_.GetGyroSensitivity();
 

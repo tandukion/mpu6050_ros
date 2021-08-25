@@ -27,7 +27,7 @@ int main(int argc, char **argv)
   offsets = mpu6050_conversion::GetCalibrationData(filepath);
 
   // Start the MPU6050 data handler. Background thread will update the data
-  MPU6050Handler mpu_handler(&nh);
+  MPU6050Handler mpu_handler(&nh, offsets);
   
   while (ros::ok()) {
     // Publish IMU msg

@@ -27,8 +27,11 @@ class MPU6050Handler {
 
     /**
      * Constructor
+     * 
+     * @param nh {ros::NodeHandle}  ROS Node Handler
+     * @param offsets{int16_t*}     List of MPU6050 offsets
      */
-    MPU6050Handler(ros::NodeHandle *nh);
+    MPU6050Handler(ros::NodeHandle *nh, int16_t *offsets);
 
     /**
      * Update DMP FIFO buffer
