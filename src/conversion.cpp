@@ -20,10 +20,9 @@ sensor_msgs::Imu GenerateImuMsg (uint8_t* fifo_buffer, float accel_scale, float 
 
   // Gyro
   // Need to be converted to rad/s
-  const float deg_to_rad = M_PI/180.0;
-  msg.angular_velocity.x = (float)((fifo_buffer[16] << 8) | fifo_buffer[17]) / gyro_scale * deg_to_rad;
-  msg.angular_velocity.y = (float)((fifo_buffer[20] << 8) | fifo_buffer[21]) / gyro_scale * deg_to_rad;
-  msg.angular_velocity.z = (float)((fifo_buffer[24] << 8) | fifo_buffer[25]) / gyro_scale * deg_to_rad;
+  msg.angular_velocity.x = (float)((fifo_buffer[16] << 8) | fifo_buffer[17]) / gyro_scale * degToRad;
+  msg.angular_velocity.y = (float)((fifo_buffer[20] << 8) | fifo_buffer[21]) / gyro_scale * degToRad;
+  msg.angular_velocity.z = (float)((fifo_buffer[24] << 8) | fifo_buffer[25]) / gyro_scale * degToRad;
 
   // Accel
   // Need to be in m/s

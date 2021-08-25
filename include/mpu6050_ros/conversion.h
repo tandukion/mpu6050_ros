@@ -4,11 +4,15 @@
 
 #pragma once
 
-#include "MPU6050Pi.h"
 #include <sensor_msgs/Imu.h>
+
+#ifndef G_FORCE
+#define G_FORCE 9.80665
+#endif
 
 namespace mpu6050_conversion
 {
+const float degToRad = M_PI/180.0;
 
 /**
  * Create IMU msg from DMP FIFO buffer

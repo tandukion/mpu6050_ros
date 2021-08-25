@@ -124,8 +124,9 @@ include_directories(
 ## Declare a C++ library
 add_library(
   ${PROJECT_NAME}
-  src/mpu6050_ros_node.cpp
   src/conversion.cpp
+  src/mpu6050_handler.cpp
+  src/mpu6050_ros_node.cpp
 )
 
 ## Add cmake target dependencies of the library
