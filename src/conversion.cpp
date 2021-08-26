@@ -60,6 +60,32 @@ int16_t* GetCalibrationData (std::string filepath) {
   }
 }
 
+sensor_msgs::Imu GenerateImuMsg (float* rpy, float* gyro, float* accel, std::string frame_id) {
+  sensor_msgs::Imu msg;
+  msg.header.stamp = ros::Time::now();
+  msg.header.frame_id = frame_id;
+
+  // Quaternion
+  // convert the rpy to quaternion
+  tf2::Quaternion q;
+  q.setRPY(rpy[0], rpy[1], rpy[2]);
+  tf2::convert(q, msg.orientation);
+
+  // Gyro
+  // Need to be converted to rad/s
+  msg.angular_velocity.x = gyro[0];
+  msg.angular_velocity.y = gyro[1];
+  msg.angular_velocity.z = gyro[2];
+
+  // Accel
+  // Need to be in m/s
+  msg.linear_acceleration.x = accel[0];
+  msg.linear_acceleration.y = accel[1];
+  msg.linear_acceleration.z = accel[2];
+
+  return msg;
+}
+
 sensor_msgs::Imu GenerateImuMsg (uint8_t* fifo_buffer, float accel_scale, float gyro_scale, std::string frame_id) {
   sensor_msgs::Imu msg;
   msg.header.stamp = ros::Time::now();

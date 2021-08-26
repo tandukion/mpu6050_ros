@@ -6,6 +6,9 @@
 
 #include <fstream>
 #include <sensor_msgs/Imu.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
 
 #ifndef G_FORCE
 #define G_FORCE 9.80665
@@ -16,6 +19,15 @@ namespace mpu6050_conversion
 const float degToRad = M_PI/180.0;
 
 int16_t* GetCalibrationData (std::string filepath);
+
+/**
+ * Create IMU msg from XYZ rotation angle, gyroscope and accelerometer data
+ * 
+ * @param rpy {float*}      rotation angle in XYZ axis (roll, pitch,yaw)
+ * @param gyro {float*}     gyroscope data in rad/s
+ * @param accel {float*}    accelerometer data in m/s^2
+ */
+sensor_msgs::Imu GenerateImuMsg (float* rpy, float* gyro, float* accel, std::string frame_id="imu");
 
 /**
  * Create IMU msg from DMP FIFO buffer

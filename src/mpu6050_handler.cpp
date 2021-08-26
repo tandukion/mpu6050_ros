@@ -8,6 +8,7 @@ MPU6050Handler::MPU6050Handler(ros::NodeHandle *nh, int16_t *offsets, int16_t ra
   : // initialization list
   nh_(*nh),
   mpu_(MPU6050Pi()),
+  dmp_(dmp),
   update_rate_(ros::Rate(rate))
 {
   // Set MPU6050 Offsets
@@ -17,6 +18,7 @@ MPU6050Handler::MPU6050Handler(ros::NodeHandle *nh, int16_t *offsets, int16_t ra
   gyro_scale = mpu_.GetGyroSensitivity();
 
   if (!dmp) {
+    ROS_INFO("MPU6050 data update thread started");
     update_task_ = std::thread(&MPU6050Handler::UpdateData, this, rate);
   }
   else {
@@ -45,15 +47,22 @@ MPU6050Handler::MPU6050Handler(ros::NodeHandle *nh, int16_t *offsets, int16_t ra
 void MPU6050Handler::UpdateData(int16_t rate) {
   while (ros::ok()) {
     // Get IMU data
-    mpu_.GetGyroFloat(&gyro[0], &gyro[1], &gyro[2]);
-    mpu_.GetAccelFloat(&accel[0], &accel[1], &accel[2]);
+    mpu_.GetGyroFloat(&gyro_deg[0], &gyro_deg[1], &gyro_deg[2]);
+    mpu_.GetAccelFloat(&accel_g[0], &accel_g[1], &accel_g[2]);
 
-    // Calculate the angles
+    // Converting data. Gyro needs to be in rad/s, accel needs to be in m/s^2
+    uint8_t i;
+    for (i=0;i<3;i++) {
+      gyro[i] = gyro_deg[i] * M_PI/180.0;
+      accel[i] = accel_g[i] * G_FORCE;
+    }
+
+    // Calculate the angles in radians.
     // 1. Roll
     //    From gyro. gyro data is in deg/s.
     rpy[0] += gyro[0] * 1.0/rate;
     //    From accel. atan or atan2f return is in rad
-    rpy_comp[0] = atan2f(accel[1], accel[2]) * 180/M_PI;
+    rpy_comp[0] = atan2f(accel[1], accel[2]);
     // Complementary Filter
     rpy[0] = MPU6050Handler::ComplementaryFilter(rpy[0], rpy_comp[0]);
 
@@ -61,7 +70,7 @@ void MPU6050Handler::UpdateData(int16_t rate) {
     //    From gyro. gyro data is in deg/s.
     rpy[1] += gyro[1] * 1.0/rate;
     //    From accel. atan or atan2f return is in rad
-    rpy_comp[1] = atan2f(accel[0], accel[2]) * 180/M_PI;
+    rpy_comp[1] = atan2f(accel[0], accel[2]);
     // Complementary Filter
     rpy[1] = MPU6050Handler::ComplementaryFilter(rpy[1], rpy_comp[1]);
 
@@ -89,4 +98,15 @@ void MPU6050Handler::UpdateDMP() {
     // Maintain refresh rate
     update_rate_.sleep();
   }
+}
+
+sensor_msgs::Imu MPU6050Handler::GetImuMsg() {
+  sensor_msgs::Imu msg;
+  if (!dmp_) {
+    msg = mpu6050_conversion::GenerateImuMsg(rpy, gyro, accel);
+  }
+  else {
+    msg = mpu6050_conversion::GenerateImuMsg(fifo_buffer, accel_scale, gyro_scale);
+  }
+  return msg;
 }

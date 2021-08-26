@@ -5,7 +5,6 @@
 #include "ros/ros.h"
 
 #include "mpu6050_ros/mpu6050_handler.h"
-#include "mpu6050_ros/conversion.h"
 
 
 int main(int argc, char **argv)
@@ -31,7 +30,7 @@ int main(int argc, char **argv)
   
   while (ros::ok()) {
     // Publish IMU msg
-    sensor_msgs::Imu msg = mpu6050_conversion::GenerateImuMsg(mpu_handler.fifo_buffer, mpu_handler.accel_scale, mpu_handler.gyro_scale);   
+    sensor_msgs::Imu msg = mpu_handler.GetImuMsg();   
     imu_pub.publish(msg);
 
     ros::spinOnce();
