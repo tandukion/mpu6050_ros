@@ -75,7 +75,8 @@ void MPU6050Handler::UpdateData(int16_t rate) {
     //    From gyro. gyro data is in deg/s.
     rpy[1] += gyro[1] * 1.0/rate;
     //    From accel. atan or atan2f return is in rad
-    rpy_comp[1] = atan2f(accel[0], sqrt(accel[1]*accel[1] + accel[2]*accel[2]));
+    //    Please note that negative sign (-) is needed to make sure the angle is according to Y-axis
+    rpy_comp[1] = atan2f(-1*accel[0], sqrt(accel[1]*accel[1] + accel[2]*accel[2]));
     // Complementary Filter
     rpy[1] = MPU6050Handler::ComplementaryFilter(rpy[1], rpy_comp[1]);
 
