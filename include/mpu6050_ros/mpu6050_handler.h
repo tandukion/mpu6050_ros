@@ -9,8 +9,11 @@
 #include "MPU6050Pi.h"
 #include "mpu6050_ros/conversion.h"
 
-#define COMPLEMENTARY_FILTER_CONSTANT   0.98
 #define DEFAULT_RATE                    100
+
+// Calculation default constants
+#define COMPLEMENTARY_FILTER_CONSTANT   0.98
+#define GYRO_THRESHOLD                  1     // Used for Deadband Filter
 
 class MPU6050Handler {
   private:

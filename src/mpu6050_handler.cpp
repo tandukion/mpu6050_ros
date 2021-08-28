@@ -63,25 +63,30 @@ void MPU6050Handler::UpdateData(int16_t rate) {
     }
 
     // Calculate the angles in radians.
-    // 1. Roll
-    //    From gyro. gyro data is in deg/s.
+    // 1. Roll (in radians)
+    //    From gyro.
     rpy[0] += gyro[0] * 1.0/rate;
-    //    From accel. atan or atan2f return is in rad
+    //    From accel.
     rpy_comp[0] = atan2f(accel[1], sqrt(accel[0]*accel[0] + accel[2]*accel[2]));
-    // Complementary Filter
+    //    Complementary Filter
     rpy[0] = MPU6050Handler::ComplementaryFilter(rpy[0], rpy_comp[0]);
 
-    // 2. Pitch
-    //    From gyro. gyro data is in deg/s.
+    // 2. Pitch (in radians)
+    //    From gyro.
     rpy[1] += gyro[1] * 1.0/rate;
-    //    From accel. atan or atan2f return is in rad
+    //    From accel.
     //    Please note that negative sign (-) is needed to make sure the angle is according to Y-axis
     rpy_comp[1] = atan2f(-1*accel[0], sqrt(accel[1]*accel[1] + accel[2]*accel[2]));
-    // Complementary Filter
+    //    Complementary Filter
     rpy[1] = MPU6050Handler::ComplementaryFilter(rpy[1], rpy_comp[1]);
 
-    // 3. Yaw
-    //    From gyro. gyro data is in deg/s.
+    // 3. Yaw (in radians)
+    //    From gyro.
+    //    As we don't use external magnetometer, there is no complementary angle from accelerometer.
+    //    In order to avoid integral error, we will use simple deadband filter.
+    //    Deadband Filter
+    if (abs(gyro[2]) < (GYRO_THRESHOLD*M_PI/180.0))
+      gyro[2] = 0.0;
     rpy[2] += gyro[2] * 1.0/rate;
     
     // Maintain refresh rate
