@@ -34,6 +34,23 @@ void MPU6050Handler::SetRotationMatrix(float *m) {
   }
 }
 
+void MPU6050Handler::TransformFrame (Eigen::Matrix3f rotation_matrix, float *gyro, float *accel) {  
+  // Create the vectors of gyro and accel with the current coordinate frame
+  Eigen::Vector3f v_gyro(gyro[0],gyro[1],gyro[2]);
+  Eigen::Vector3f v_accel(accel[0],accel[1],accel[2]);
+
+  // Apply the rotation matrix
+  v_gyro = rotation_matrix * v_gyro;
+  v_accel = rotation_matrix * v_accel;
+
+  // Return the vectors of gyro and accel with the new coordinate frame
+  int8_t i;
+  for (i=0;i<3;i++){
+    gyro[i] = v_gyro(i);
+    accel[i] = v_accel(i);
+  }
+}
+
 void MPU6050Handler::Start() {
   if (!dmp_) {
     update_task_ = std::thread(&MPU6050Handler::UpdateData, this, rate_);
@@ -79,6 +96,9 @@ void MPU6050Handler::UpdateData(int16_t rate) {
       gyro[i] = gyro_deg[i] * M_PI/180.0;
       accel[i] = accel_g[i] * G_FORCE;
     }
+
+    // Transform the frame
+    MPU6050Handler::TransformFrame(rotation_matrix_, gyro, accel);
 
     // Calculate the angles in radians.
     // 1. Roll (in radians)

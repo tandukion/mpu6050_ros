@@ -33,7 +33,16 @@ class MPU6050Handler {
 
     // Transformation members
     Eigen::Matrix3f rotation_matrix_;
-    
+
+    /**
+     * Change the IMU data coordinate frame based on the given rotation matrix.
+     * 
+     * @param rotation_matrix {Eigen::Matrix3f} Rotation Matrix for the coordinate frame
+     * @param gyro {float*}  Array of gyroscope data
+     * @param accel {float*} Array of accelerometer data
+     */
+    void TransformFrame (Eigen::Matrix3f rotation_matrix, float *gyro, float *accel);
+
     /**
      * Update MPU6050 Data
      * Process the gyroscope and accelerometer to 
