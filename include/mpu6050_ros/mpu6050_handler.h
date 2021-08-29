@@ -6,6 +6,8 @@
 #define _MPU6050_HANDLER_H
 
 #include "ros/ros.h"
+#include <Eigen/Dense>
+
 #include "MPU6050Pi.h"
 #include "mpu6050_ros/conversion.h"
 
@@ -24,10 +26,33 @@ class MPU6050Handler {
     uint16_t packet_size_;
 
     // Data update thread
+    int16_t rate_;
     ros::Rate update_rate_;
     std::thread update_task_;
     std::thread update_dmp_task_;
 
+    // Transformation members
+    Eigen::Matrix3f rotation_matrix_;
+    
+    /**
+     * Update MPU6050 Data
+     * Process the gyroscope and accelerometer to 
+     */
+    void UpdateData(int16_t rate);
+
+    /**
+     * Update DMP FIFO buffer
+     */
+    void UpdateDMP();
+
+    /**
+     * Calculate angle using Complementary Filter
+     * Complementary Filter is implemented with first order High-Pass and Low-Pass filter.  
+     */
+    float ComplementaryFilter(float angle, float angle_comp) {
+      return COMPLEMENTARY_FILTER_CONSTANT * angle + (1- COMPLEMENTARY_FILTER_CONSTANT) * angle_comp;
+    }
+  
   public:
     int dev_status;
     float accel_scale;
@@ -52,15 +77,16 @@ class MPU6050Handler {
     MPU6050Handler(ros::NodeHandle *nh, int16_t *offsets, int16_t rate=DEFAULT_RATE, bool dmp=false);
 
     /**
-     * Update MPU6050 Data
-     * Process the gyroscope and accelerometer to 
+     * Set Rotation Matrix showing the default orientation of MPU6050
+     * 
+     * @param m {float*}  Array of rotation matrix data. Length should be 9.
      */
-    void UpdateData(int16_t rate);
+    void SetRotationMatrix(float *m);
 
     /**
-     * Update DMP FIFO buffer
+     * Start updating MPU6050 Data on class member internally
      */
-    void UpdateDMP();
+    void Start();
 
     /**
      * Return IMU msg data ready to be published
@@ -68,14 +94,6 @@ class MPU6050Handler {
      * @return {sensor_msgs::Imu} IMU msg data
      */
     sensor_msgs::Imu GetImuMsg();
-
-    /**
-     * Calculate angle using Complementary Filter
-     * Complementary Filter is implemented with first order High-Pass and Low-Pass filter.  
-     */
-    float ComplementaryFilter(float angle, float angle_comp) {
-      return COMPLEMENTARY_FILTER_CONSTANT * angle + (1- COMPLEMENTARY_FILTER_CONSTANT) * angle_comp;
-    }
 
 };
 

@@ -27,6 +27,12 @@ int main(int argc, char **argv)
 
   // Start the MPU6050 data handler. Background thread will update the data
   MPU6050Handler mpu_handler(&nh, offsets);
+
+  float m[] = {-1, 0, 0, 0, 0, -1, 0, -1, 0};
+  mpu_handler.SetRotationMatrix(m);
+
+  // Start getting MPU6050 Data
+  mpu_handler.Start();
   
   while (ros::ok()) {
     // Publish IMU msg

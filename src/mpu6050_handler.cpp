@@ -9,6 +9,7 @@ MPU6050Handler::MPU6050Handler(ros::NodeHandle *nh, int16_t *offsets, int16_t ra
   nh_(*nh),
   mpu_(MPU6050Pi()),
   dmp_(dmp),
+  rate_(rate),
   update_rate_(ros::Rate(rate))
 {
   // Set MPU6050 Offsets
@@ -17,9 +18,26 @@ MPU6050Handler::MPU6050Handler(ros::NodeHandle *nh, int16_t *offsets, int16_t ra
   accel_scale = mpu_.GetAccelSensitivity();
   gyro_scale = mpu_.GetGyroSensitivity();
 
-  if (!dmp) {
+  // Initialize rotation matrix with identity matrix
+  rotation_matrix_ = Eigen::Matrix3f::Identity();
+}
+
+void MPU6050Handler::SetRotationMatrix(float *m) {
+  // Only accept 3D rotation matrix
+  if ((*(&m + 1) - m) == 9){
+    // Create new rotation matrix from input array
+    rotation_matrix_ = Eigen::Matrix3f::Zero() + Eigen::Map<Eigen::Matrix3f>(m);
+    ROS_INFO_STREAM("Set Rotaton Matrix to:\n" << rotation_matrix_);
+  }
+  else {
+    ROS_ERROR("Invalid Rotation Matrix. Please use 3D Rotation matrix.");
+  }
+}
+
+void MPU6050Handler::Start() {
+  if (!dmp_) {
+    update_task_ = std::thread(&MPU6050Handler::UpdateData, this, rate_);
     ROS_INFO("MPU6050 data update thread started");
-    update_task_ = std::thread(&MPU6050Handler::UpdateData, this, rate);
   }
   else {
     ROS_INFO("Initializing DMP..");
@@ -39,8 +57,8 @@ MPU6050Handler::MPU6050Handler(ros::NodeHandle *nh, int16_t *offsets, int16_t ra
     }
 
     // // Start thread to update the data
-    ROS_INFO("DMP update thread started");
     update_dmp_task_ = std::thread(&MPU6050Handler::UpdateDMP, this);
+    ROS_INFO("DMP update thread started");
   }
 }
 
