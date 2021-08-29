@@ -128,6 +128,7 @@ include_directories(
 add_library(
   ${PROJECT_NAME}
   src/conversion.cpp
+  src/transformation.cpp
   src/mpu6050_handler.cpp
   src/mpu6050_ros_node.cpp
 )

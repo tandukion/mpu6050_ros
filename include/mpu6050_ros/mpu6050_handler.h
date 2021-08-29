@@ -6,10 +6,10 @@
 #define _MPU6050_HANDLER_H
 
 #include "ros/ros.h"
-#include <Eigen/Dense>
 
 #include "MPU6050Pi.h"
 #include "mpu6050_ros/conversion.h"
+#include "mpu6050_ros/transformation.h"
 
 #define DEFAULT_RATE                    100
 
@@ -33,15 +33,6 @@ class MPU6050Handler {
 
     // Transformation members
     Eigen::Matrix3f rotation_matrix_;
-
-    /**
-     * Change the IMU data coordinate frame based on the given rotation matrix.
-     * 
-     * @param rotation_matrix {Eigen::Matrix3f} Rotation Matrix for the coordinate frame
-     * @param gyro {float*}  Array of gyroscope data
-     * @param accel {float*} Array of accelerometer data
-     */
-    void TransformFrame (Eigen::Matrix3f rotation_matrix, float *gyro, float *accel);
 
     /**
      * Update MPU6050 Data
@@ -91,6 +82,12 @@ class MPU6050Handler {
      * @param m {float*}  Array of rotation matrix data. Length should be 9.
      */
     void SetRotationMatrix(float *m);
+    /**
+     * Set Rotation Matrix showing the default orientation of MPU6050
+     * 
+     * @param M {Eigen::Matrix3f}  Rotation matrix data (3x3)
+     */
+    void SetRotationMatrix(Eigen::Matrix3f M);
 
     /**
      * Start updating MPU6050 Data on class member internally

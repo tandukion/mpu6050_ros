@@ -29,7 +29,8 @@ int main(int argc, char **argv)
   MPU6050Handler mpu_handler(&nh, offsets);
 
   float m[] = {-1, 0, 0, 0, 0, -1, 0, -1, 0};
-  mpu_handler.SetRotationMatrix(m);
+  Eigen::Matrix3f M(m);
+  mpu_handler.SetRotationMatrix(M);
 
   // Start getting MPU6050 Data
   mpu_handler.Start();
