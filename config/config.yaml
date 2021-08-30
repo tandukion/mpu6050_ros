@@ -1,0 +1,7 @@
+rotation:
+  -
+    axis: 'x'
+    angle: 0   # Rotation angle in degrees
+  -
+    axis: 'y'
+    angle: 0
