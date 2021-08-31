@@ -128,9 +128,9 @@ include_directories(
 add_library(
   ${PROJECT_NAME}
   src/conversion.cpp
-  src/transformation.cpp
-  src/mpu6050_handler.cpp
-  src/mpu6050_ros_node.cpp
+  # src/transformation.cpp
+  # src/mpu6050_handler.cpp
+  # src/mpu6050_ros_node.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -141,7 +141,7 @@ add_library(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/mpu6050_ros_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/mpu6050_ros_node.cpp)
 add_executable(mpu6050_tf_broadcaster src/mpu6050_tf_broadcaster.cpp)
 
 ## Rename C++ executable without prefix
@@ -156,10 +156,10 @@ add_executable(mpu6050_tf_broadcaster src/mpu6050_tf_broadcaster.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(
-  ${PROJECT_NAME}_node
+  # ${PROJECT_NAME}_node
   ${PROJECT_NAME}
   ${catkin_LIBRARIES}
-  libMPU6050Pi.so
+  # libMPU6050Pi.so
 )
 
 target_link_libraries(
