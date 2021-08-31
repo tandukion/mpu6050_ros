@@ -1,0 +1,6 @@
+<launch>
+  <arg name="model" default="$(find mpu6050_ros)/urdf/mpu6050.urdf.xacro"/>
+  <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mpu6050_ros)/launch/mpu6050.rviz"/>
+</launch>
