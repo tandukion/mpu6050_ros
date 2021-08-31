@@ -181,7 +181,7 @@ rotation:
     axis: 'z'
     angle: 180
   -
-    axis: 'z'
+    axis: 'x'
     angle: 90
       </pre>
     </td>
