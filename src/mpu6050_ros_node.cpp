@@ -26,8 +26,13 @@ int main(int argc, char **argv)
   int16_t *offsets;
   offsets = mpu6050_conversion::GetCalibrationData(filepath);
 
+  // Get dmp flag
+  bool dmp;
+  nh.param<bool>("dmp", dmp, false);
+  ROS_INFO_STREAM("DMP flag: " << dmp);
+
   // Initialize the MPU6050 data handler.
-  MPU6050Handler mpu_handler(&nh, offsets);
+  MPU6050Handler mpu_handler(&nh, offsets, DEFAULT_RATE, dmp);
 
   // Get rotation information from ROS parameter
   XmlRpc::XmlRpcValue config_rotation;
