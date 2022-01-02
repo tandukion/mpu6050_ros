@@ -21,8 +21,22 @@ void ImuDataCallback(const sensor_msgs::Imu::ConstPtr& msg) {
   transformStamped.transform.translation.y = 0.0;
   transformStamped.transform.translation.z = 0.0;
 
-  tf2::convert(msg->orientation, transformStamped.transform.rotation);
+  // Convert to tf2 quaternion
+  tf2::Quaternion q;
+  tf2::fromMsg(msg->orientation, q);
 
+  // Filter noise from the sensor
+  float ERROR_LIM = 0.001;
+  if (abs(q.length()-1) > ERROR_LIM){
+    // Do not publish the noise
+    return;
+  }
+
+  // Normalize the quaternion, then convert to msg
+  q.normalize();
+  transformStamped.transform.rotation = tf2::toMsg(q);
+
+  // Publish
   br.sendTransform(transformStamped);
 }
 
