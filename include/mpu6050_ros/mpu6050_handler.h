@@ -56,8 +56,13 @@ class MPU6050Handler {
   public:
     int dev_status;
     float accel_scale;
+    int accel_scale_range;
     float gyro_scale;
     uint8_t fifo_buffer[64];
+
+    Quaternion q;
+    Vector v_gyro;
+    Vector v_accel;
 
     float gyro_deg[3];  // gyro data in deg/s
     float accel_g[3];   // accel data in g

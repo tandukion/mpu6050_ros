@@ -9,6 +9,7 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
+#include "math_3d.h"
 
 #ifndef G_FORCE
 #define G_FORCE 9.80665
@@ -39,6 +40,18 @@ sensor_msgs::Imu GenerateImuMsg (float* rpy, float* gyro, float* accel, std::str
  * 
  * @return {sensor_msgs::Imu}
  */
-sensor_msgs::Imu GenerateImuMsg (uint8_t* fifo_buffer, float accel_scale, float gyro_scale, std::string frame_id="imu");
+sensor_msgs::Imu GenerateImuMsg (uint8_t* fifo_buffer, float gyro_scale, float accel_scale, int accel_scale_range=2, std::string frame_id="imu");
+
+/**
+ * Create IMU msg from DMP FIFO buffer
+ * 
+ * @param q {Quaternion}          Quaternion data
+ * @param v_gyro {Vector}         gyroscope data (in deg/s)
+ * @param v_accel {Vector}        accelerometer data (in g)
+ * @param frame_id {string}       frame id for the message
+ * 
+ * @return {sensor_msgs::Imu}
+ */
+sensor_msgs::Imu GenerateImuMsg (Quaternion q, Vector v_gyro, Vector v_accel, std::string frame_id="imu");
 
 }

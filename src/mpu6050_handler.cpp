@@ -18,6 +18,11 @@ MPU6050Handler::MPU6050Handler(ros::NodeHandle *nh, int16_t *offsets, int16_t ra
   accel_scale = mpu_.GetAccelSensitivity();
   gyro_scale = mpu_.GetGyroSensitivity();
 
+  if (accel_scale== ACCEL_LSB_2) accel_scale_range = 2;
+  else if (accel_scale== ACCEL_LSB_4) accel_scale_range = 4;
+  else if (accel_scale== ACCEL_LSB_8) accel_scale_range = 8;
+  else if (accel_scale== ACCEL_LSB_16) accel_scale_range = 16;
+
   // Initialize rotation matrix with identity matrix
   rotation_matrix_ = Eigen::Matrix3f::Identity();
 }
@@ -133,6 +138,12 @@ void MPU6050Handler::UpdateDMP() {
     // Read FIFO buffer
     mpu_.GetFIFOBytes(fifo_buffer,packet_size_);
 
+    // Process the FIFO buffer
+    // NOTE: it is also possible to directly use the FIFO buffer
+    mpu_.DMPGetQuaternion(&q, fifo_buffer);
+    mpu_.DMPGetGyro(&v_gyro, fifo_buffer);
+    mpu_.DMPGetAccel(&v_accel, fifo_buffer);
+
     // Maintain refresh rate
     update_rate_.sleep();
   }
@@ -144,7 +155,11 @@ sensor_msgs::Imu MPU6050Handler::GetImuMsg() {
     msg = mpu6050_conversion::GenerateImuMsg(rpy, gyro, accel);
   }
   else {
-    msg = mpu6050_conversion::GenerateImuMsg(fifo_buffer, accel_scale, gyro_scale);
+    // Generate from the FIFO data directly
+    // msg = mpu6050_conversion::GenerateImuMsg(fifo_buffer, gyro_scale, accel_scale, accel_scale_range);
+    
+    // Generate from the processed FIFO data
+    msg = mpu6050_conversion::GenerateImuMsg(q, v_gyro, v_accel);
   }
   return msg;
 }
