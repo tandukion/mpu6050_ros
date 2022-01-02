@@ -19,6 +19,13 @@ namespace mpu6050_conversion
 {
 const float degToRad = M_PI/180.0;
 
+/**
+ * Return the MPU6050 calibration data from the given filepath. File should be in CSV.
+ * 
+ * @param filepath {string} path for the calibration data file
+ * 
+ * @return {int16_t*}   Array of calibration data
+ */
 int16_t* GetCalibrationData (std::string filepath);
 
 /**
@@ -27,6 +34,9 @@ int16_t* GetCalibrationData (std::string filepath);
  * @param rpy {float*}      rotation angle in XYZ axis (roll, pitch,yaw)
  * @param gyro {float*}     gyroscope data in rad/s
  * @param accel {float*}    accelerometer data in m/s^2
+ * @param frame_id {string} frame id for the message
+ * 
+ * @return {sensor_msgs::Imu}
  */
 sensor_msgs::Imu GenerateImuMsg (float* rpy, float* gyro, float* accel, std::string frame_id="imu");
 
