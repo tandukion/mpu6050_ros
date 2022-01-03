@@ -7,8 +7,6 @@
 
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/static_transform_broadcaster.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <geometry_msgs/TransformStamped.h>
 
 #include "mpu6050_ros/mpu6050_handler.h"
 

@@ -7,6 +7,15 @@
 #include <fstream>
 #include <sensor_msgs/Imu.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+/** NOTE: <tf2_geometry_msgs/tf2_geometry_msgs.h> already inlcudes:
+ *              - <tf2_geometry_msgs/tf2_geometry_msgs.h>
+ *              - <geometry_msgs/TransformStamped.h> 
+ *              - <tf2/linearMath/Transform.h> that includes:
+ *                      - <tf2/linearMath/Quaternion.h>
+ *                      - <tf2/linearMath/Matrix3x3.h>
+ * 
+ * See http://docs.ros.org/en/melodic/api/tf2_geometry_msgs/html/c++/tf2__geometry__msgs_8h.html
+ */ 
 
 #include "math_3d.h"
 
