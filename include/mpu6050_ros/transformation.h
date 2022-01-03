@@ -39,9 +39,10 @@ Eigen::Matrix3f CreateRotationMatrix (RotationInfo rotation);
  * The final rotation matrix is the product of rotation info (in order)
  * 
  * @param rotation {RotationInfo*}  Array of rotation info
+ * @param length {int}              Length of the array. 0 for dynamically check the length
  * @return {Eigen::Matrix3f}
  */
-Eigen::Matrix3f CreateRotationMatrix (RotationInfo *rotation);
+Eigen::Matrix3f CreateRotationMatrix (RotationInfo *rotation, int length=0);
 
 /**
  * Transform the array of vector data in 3D with rotated coordinate frame based on the given rotation matrix.

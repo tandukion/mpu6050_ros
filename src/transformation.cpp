@@ -51,19 +51,24 @@ Eigen::Matrix3f CreateRotationMatrix (RotationInfo rotation) {
   return CreateRotationMatrix(rotation.axis, rotation.angle);
 }
 
-Eigen::Matrix3f CreateRotationMatrix (RotationInfo *rotation) {
-  int8_t length = *(&rotation + 1) - rotation;
-  Eigen::Matrix3f M[length];
-  Eigen::Matrix3f M_final;
+Eigen::Matrix3f CreateRotationMatrix (RotationInfo *rotation, int length) {
+  int len;
+  if (length <=0) {
+    // Calculate length based on the given array
+    len = *(&rotation + 1) - rotation;
+  }
+  else {
+    len = length;
+  }
 
-  for (int8_t i=0; i<length; i++) {
+  // Matrix containers
+  Eigen::Matrix3f M[len];
+  Eigen::Matrix3f M_final = Eigen::Matrix3f::Identity();
+
+  for (int8_t i=0; i<len; i++) {
     M[i] = CreateRotationMatrix(rotation[i]);
-    if (i==0){
-      M_final = M[i];
-    }
-    else {
-      M_final = M_final * M[i];
-    }
+    // Calculate the product
+    M_final = M_final * M[i];
   }
   return M_final;
 }

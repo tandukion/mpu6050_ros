@@ -8,6 +8,39 @@
 #include "mpu6050_ros/mpu6050_handler.h"
 
 
+Eigen::Matrix3f CreateRotationMatrix (XmlRpc::XmlRpcValue rotation_array) {
+  // Create array buffer for all rotation applied in order
+  transformation::RotationInfo rotation_list[rotation_array.size()];
+
+  ROS_INFO("MPU6050 is set with orientation:");
+  int8_t i;
+  for (i=0; i<rotation_array.size(); i++){
+    // Get the rotation information
+    transformation::RotationInfo rotation;
+
+    for(std::map<std::string,XmlRpc::XmlRpcValue>::iterator p=rotation_array[i].begin(); p!=rotation_array[i].end(); ++p) {
+      // Get the axis name
+      if (p->first == "axis") {
+        rotation.axis = static_cast<std::string>(p->second);
+      }
+      // Get the rotation angle
+      else if(p->first == "angle"){
+        if (p->second.getType() == XmlRpc::XmlRpcValue::TypeInt) {
+          rotation.angle = static_cast<double>(static_cast<int>(p->second));
+        }
+        else {
+          rotation.angle = static_cast<double>(p->second);
+        }
+      }
+    }
+    ROS_INFO("%d. Rotation on %s %.1f degrees", i+1, rotation.axis.c_str(), rotation.angle);
+    rotation_list[i] = rotation;
+  }
+
+  Eigen::Matrix3f M = transformation::CreateRotationMatrix(rotation_list, rotation_array.size());
+  return M;
+}
+
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "mpu6050_node");
@@ -39,36 +72,8 @@ int main(int argc, char **argv)
   nh.getParam("rotation", config_rotation);
 
   if (config_rotation.getType() == XmlRpc::XmlRpcValue::TypeArray) {
-    // Create array buffer for all rotation applied in order
-    transformation::RotationInfo rotation_list[config_rotation.size()];
-
-    ROS_INFO("MPU6050 is set with orientation:");
-    int8_t i;
-    for (i=0; i<config_rotation.size(); i++){
-      // Get the rotation information
-      transformation::RotationInfo rotation;
-
-      for(std::map<std::string,XmlRpc::XmlRpcValue>::iterator p=config_rotation[i].begin(); p!=config_rotation[i].end(); ++p) {
-				// Get the axis name
-        if (p->first == "axis") {
-          rotation.axis = static_cast<std::string>(p->second);
-        }
-        // Get the rotation angle
-        else if(p->first == "angle"){
-          if (p->second.getType() == XmlRpc::XmlRpcValue::TypeInt) {
-            rotation.angle = static_cast<double>(static_cast<int>(p->second));
-          }
-          else {
-            rotation.angle = static_cast<double>(p->second);
-          }
-        }
-      }
-      ROS_INFO("%d. Rotation on %s %.1f degrees", i+1, rotation.axis.c_str(), rotation.angle);
-      rotation_list[i] = rotation;
-    }
-    
     // Create Rotation Matrix from rotation information
-    Eigen::Matrix3f M = transformation::CreateRotationMatrix(rotation_list);
+    Eigen::Matrix3f M = CreateRotationMatrix(config_rotation);
 
     // Set Rotation Matrix for the current MPU6050
     mpu_handler.SetRotationMatrix(M);
