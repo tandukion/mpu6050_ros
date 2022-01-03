@@ -5,9 +5,20 @@
 #include "ros/ros.h"
 #include <XmlRpcValue.h>
 
+#include <tf2_ros/transform_broadcaster.h>
+#include <tf2_ros/static_transform_broadcaster.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <geometry_msgs/TransformStamped.h>
+
 #include "mpu6050_ros/mpu6050_handler.h"
 
 
+/**
+ * @brief Create a Rotation Matrix object from rotation infos on the given rotation array.
+ * 
+ * @param rotation_array {XmlRpc::XmlRpcValue}  ROS Node Handler
+ * @return Eigen::Matrix3f  Rotation Matrix (3x3)
+ */
 Eigen::Matrix3f CreateRotationMatrix (XmlRpc::XmlRpcValue rotation_array) {
   // Create array buffer for all rotation applied in order
   transformation::RotationInfo rotation_list[rotation_array.size()];
@@ -41,6 +52,71 @@ Eigen::Matrix3f CreateRotationMatrix (XmlRpc::XmlRpcValue rotation_array) {
   return M;
 }
 
+/**
+ * @brief Publish static tf for the IMU model from the body
+ * 
+ * @param M {Eigen::Matrix3f}         Rotation matrix from parent_frame to child_frame
+ * @param header_frame {std::string}  Parent frame ID (body)
+ * @param child_frame {std::string}   Child frame ID (IMU model)
+ */
+void PublishImuStaticTf(Eigen::Matrix3f M, std::string parent_frame="imu", std::string child_frame="imu_model") {
+  // Create tf broadcaster and tf msg
+  static tf2_ros::StaticTransformBroadcaster br;
+  geometry_msgs::TransformStamped transformStamped;
+
+  transformStamped.header.stamp = ros::Time::now();
+  transformStamped.header.frame_id = parent_frame;
+  transformStamped.child_frame_id = child_frame;
+
+  // Convert to tf2 quaternion
+  tf2::Quaternion q;
+
+  tf2::Matrix3x3 M_tf(M(0,0), M(0,1), M(0,2), M(1,0), M(1,1), M(1,2), M(2,0), M(2,1), M(2,2));
+  M_tf.getRotation(q);
+
+  transformStamped.transform.rotation = tf2::toMsg(q);
+
+  // Publish the Tf
+  br.sendTransform(transformStamped);
+}
+
+/**
+ * @brief Publish the tf from the IMU data
+ * 
+ * @param msg {sensor_msgs::Imu} IMU data
+ */
+void PublishImuTf(sensor_msgs::Imu msg, std::string header_frame="world") {
+  // Create tf broadcaster and tf msg
+  static tf2_ros::TransformBroadcaster br;
+  geometry_msgs::TransformStamped transformStamped;
+
+  transformStamped.header.stamp = ros::Time::now();
+  transformStamped.header.frame_id = header_frame;
+  transformStamped.child_frame_id = msg.header.frame_id;
+
+  // Convert to tf2 quaternion
+  tf2::Quaternion q;
+  tf2::fromMsg(msg.orientation, q);
+
+  // Filter noise from the sensor
+  float ERROR_LIM = 0.001;
+  if (abs(q.length()-1) > ERROR_LIM){
+    // Do not publish the noise
+    return;
+  }
+
+  // Normalize the quaternion, then convert to msg
+  q.normalize();
+  transformStamped.transform.rotation = tf2::toMsg(q);
+
+  // Publish the Tf
+  br.sendTransform(transformStamped);
+}
+
+
+/**
+ * @brief main
+ */
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "mpu6050_node");
@@ -49,6 +125,7 @@ int main(int argc, char **argv)
   ros::NodeHandle nh;
   ros::Rate loop_rate(100);
 
+  // ROS topic publishers
   ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("imu_data", 10);
 
   // Get MPU6050 calibration data for offsets
@@ -77,15 +154,21 @@ int main(int argc, char **argv)
 
     // Set Rotation Matrix for the current MPU6050
     mpu_handler.SetRotationMatrix(M);
+
+    // Publish the static tf
+    PublishImuStaticTf(M);
   }
 
   // Start getting MPU6050 Data. Background thread will update the data.
   mpu_handler.Start();
   
   while (ros::ok()) {
-    // Publish IMU msg
+    // Publish IMU Data msg
     sensor_msgs::Imu msg = mpu_handler.GetImuMsg();   
     imu_pub.publish(msg);
+
+    // Publish the TF
+    PublishImuTf(msg);
 
     ros::spinOnce();
     loop_rate.sleep();

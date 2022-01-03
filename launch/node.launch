@@ -2,6 +2,5 @@
   <group ns="mpu6050">
     <rosparam command="load" file="$(find mpu6050_ros)/config/config.yaml" />
     <node pkg="mpu6050_ros" type="mpu6050_ros_node" name="mpu6050_ros_node" output="screen"/>
-    <node pkg="mpu6050_ros" type="mpu6050_tf_broadcaster" name="mpu6050_tf_broadcaster" output="screen"/>
   </group>
 </launch>
