@@ -144,6 +144,11 @@ void MPU6050Handler::UpdateDMP() {
     mpu_.DMPGetGyro(&v_gyro, fifo_buffer);
     mpu_.DMPGetAccel(&v_accel, fifo_buffer);
 
+    // Rotate the Quaternion and Vectors with the rotated frame (based on rotation matrix)
+    // transformation::RotateFrame(rotation_matrix_, &q);
+    // transformation::RotateFrame(rotation_matrix_, &v_gyro);
+    // transformation::RotateFrame(rotation_matrix_, &v_accel);
+
     // Maintain refresh rate
     update_rate_.sleep();
   }
