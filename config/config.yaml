@@ -6,4 +6,4 @@ rotation:
     axis: 'y'
     angle: 0
 
-dmp: True
+dmp: False
