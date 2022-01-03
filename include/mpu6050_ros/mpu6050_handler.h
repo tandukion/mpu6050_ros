@@ -15,7 +15,7 @@
 
 // Calculation default constants
 #define COMPLEMENTARY_FILTER_CONSTANT   0.98
-#define GYRO_THRESHOLD                  1     // Used for Deadband Filter
+#define GYRO_THRESHOLD                  10  // deg/s     // Used for Deadband Filter
 
 class MPU6050Handler {
   private:
