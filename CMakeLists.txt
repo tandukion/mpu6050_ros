@@ -142,7 +142,6 @@ add_library(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node src/mpu6050_ros_node.cpp)
-add_executable(mpu6050_tf_broadcaster src/mpu6050_tf_broadcaster.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -162,10 +161,6 @@ target_link_libraries(
   libMPU6050Pi.so
 )
 
-target_link_libraries(
-  mpu6050_tf_broadcaster
-  ${catkin_LIBRARIES}
-)
 #############
 ## Install ##
 #############
