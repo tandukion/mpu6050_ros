@@ -7,8 +7,6 @@ Panels:
         - /Global Options1
         - /Status1
         - /Grid1
-        - /TF1
-        - /TF1/Frames1
         - /TF1/Tree1
       Splitter Ratio: 0.5
     Tree Height: 725
@@ -59,12 +57,13 @@ Visualization Manager:
     - Alpha: 1
       Class: rviz/Axes
       Enabled: false
-      Length: 2
+      Length: 1
       Name: Axes
       Radius: 0.10000000149011612
       Reference Frame: <Fixed Frame>
+      Show Trail: false
       Value: false
-    - Alpha: 1
+    - Alpha: 0.5
       Class: rviz_plugin_tutorials/Imu
       Color: 204; 51; 204
       Enabled: false
@@ -81,10 +80,12 @@ Visualization Manager:
         All Enabled: false
         imu:
           Value: true
+        imu_model:
+          Value: false
         world:
           Value: true
       Marker Alpha: 1
-      Marker Scale: 10
+      Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
@@ -92,7 +93,8 @@ Visualization Manager:
       Tree:
         world:
           imu:
-            {}
+            imu_model:
+              {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -106,6 +108,11 @@ Visualization Manager:
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
         imu:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        imu_model:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -148,7 +155,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 7.523559093475342
+      Distance: 1.8808542490005493
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -164,9 +171,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7003982067108154
+      Pitch: 0.5953969955444336
       Target Frame: <Fixed Frame>
-      Yaw: 0.7603852152824402
+      Yaw: 5.498571872711182
     Saved: ~
 Window Geometry:
   Displays:
