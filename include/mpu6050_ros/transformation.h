@@ -4,6 +4,8 @@
 
 #include <Eigen/Dense>
 
+#include "math_3d.h"
+
 #define ZERO_ROUND 1e-07
 
 namespace transformation
@@ -45,10 +47,44 @@ Eigen::Matrix3f CreateRotationMatrix (RotationInfo rotation);
 Eigen::Matrix3f CreateRotationMatrix (RotationInfo *rotation, int length=0);
 
 /**
+ * Create a Rotation Matrix object from a Quaternion object
+ * ref: https://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToMatrix/index.htm
+ * 
+ * @param q {Quaternion}    Quaternion
+ * @return {Eigen::Matrix3f} 
+ */
+Eigen::Matrix3f CreateRotationMatrix (Quaternion q);
+
+/**
+ * Create a Quaternion object from a Rotation Matrix object
+ * ref:https://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
+ * 
+ * @param M {Eigen::Matrix3f} Rotation Matrix
+ * @return {Quaternion} 
+ */
+Quaternion CreateQuaternion (Eigen::Matrix3f M);
+
+/**
  * Transform the array of vector data in 3D with rotated coordinate frame based on the given rotation matrix.
  * 
  * @param rotation_matrix {Eigen::Matrix3f} Rotation Matrix for the coordinate frame
  * @param vector {float*}  Array of vector data
  */
 void RotateFrame (Eigen::Matrix3f rotation_matrix, float vector[3]);
+
+/**
+ * Transform the Vector in 3D with rotated coordinate frame based on the given rotation matrix.
+ * 
+ * @param rotation_matrix {Eigen::Matrix3f} Rotation Matrix for the coordinate frame
+ * @param vector {Vector}  Vector data
+ */
+void RotateFrame (Eigen::Matrix3f rotation_matrix, Vector *vector);
+
+/**
+ * Transform the Quaternion with the given rotation matrix.
+ * 
+ * @param rotation_matrix {Eigen::Matrix3f} Rotation Matrix
+ * @param q  {Quaternion} Quaternion data
+ */
+void RotateFrame (Eigen::Matrix3f rotation_matrix, Quaternion *q);
 }
